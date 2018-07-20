@@ -12,9 +12,9 @@ def create_data():
     with open('./data/job.txt', encoding='utf-8') as f:
         with open('./data/bag_of_words.txt', 'w', encoding='utf-8') as f2:
             # 所有的词
-            all_li = []
+            all_li = list()
             # 每行的词，并用空格隔开
-            all_str_li = []
+            all_str_li = list()
             for i in f:
                 line = i.strip().lower()
                 if line[0] == '*':
@@ -31,10 +31,10 @@ def create_data():
                             all_li.append(k)
             # 去重后所有的词
             all_pure_li = list(set(all_li))
-            print(all_str_li)
-            print(all_pure_li)
+            # print(all_str_li)
+            # print(all_pure_li)
             di = dict()
-            print(len(all_pure_li))
+            # print(len(all_pure_li))
             for ind, v in enumerate(all_pure_li):
                 # print(ind + 1, v)
                 di[v] = ind + 1

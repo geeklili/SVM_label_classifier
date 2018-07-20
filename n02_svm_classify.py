@@ -22,34 +22,19 @@ def create_train_data():
                 line_li = list(jieba.cut_for_search(line))
                 feature_li.append(class_line)
 
-                line_str = ' '.join(line_li)
-                line_str2 = re.sub(r'…|/|\(|\)|\.|）|（', '', line_str)
-                line_lis = line_str2.split(' ')
-                line_li_new = list()
-                for j in line_lis:
-                    if len(j) > 0:
-                        line_li_new.append(j)
+                line_str2 = re.sub(r'…|/|\(|\)|\.|）|（', '', ' '.join(line_li))
 
-                # print(line_li_new)
+                line_li_new = [i for i in line_str2.split(' ') if len(i) > 0]
+
                 # numpy_in_li: [170, 104, 305, 221] -->数字代表第几个位置的向量的数字应该为1
-                numpy_in_li = list()
-                for k in line_li_new:
-                    val = pure_di.get(k, None)
-                    numpy_in_li.append(val)
+                numpy_in_li = [pure_di.get(k, None) for k in line_li_new]
 
-                in_vec_li = list()
-                print(numpy_in_li)
-                for num in range(1, vec_length + 1):
+                in_vec_li = [1 if num in numpy_in_li else 0 for num in range(1, vec_length + 1)]
 
-                    if num in numpy_in_li:
-                        in_vec_li.append(1)
-                        # print(num)
-                    else:
-                        in_vec_li.append(0)
                 numpy_out_li.append(in_vec_li)
 
-    print(numpy_out_li)
-    print(feature_li)
+    # print(numpy_out_li)
+    # print(feature_li)
     return numpy_out_li, feature_li
 
 
@@ -90,36 +75,18 @@ def profession_predict(name):
         pure_di = eval(f2.read())
         vec_length = len(pure_di)
         # print(vec_length)
-        li = list(jieba.cut_for_search(name))
+        li = list(jieba.cut_for_search(name.lower()))
         # print(li)
-        line_str = ' '.join(li)
-        line_str2 = re.sub(r'…|/|\(|\)|\.|）|（', '', line_str)
-        line_lis = line_str2.split(' ')
-        line_li_new = list()
-        for j in line_lis:
-            if len(j) > 0:
-                line_li_new.append(j)
-        # print(line_li_new)
-        predict_li = list()
+        line_str2 = re.sub(r'…|/|\(|\)|\.|）|（', '', ' '.join(li))
 
-        numpy_in_li = list()
-        for k in line_li_new:
-            val = pure_di.get(k, None)
-            numpy_in_li.append(val)
-        # print(numpy_in_li)
-        in_vec_li = list()
-        for num in range(1, vec_length + 1):
+        line_li_new = [i for i in line_str2.split(' ') if len(i) > 0]
 
-            if num in numpy_in_li:
-                in_vec_li.append(1)
-                # print(num)
-            else:
-                in_vec_li.append(0)
-        predict_li.append(in_vec_li)
-        # print(predict_li)
+        numpy_in_li = [pure_di.get(i, None) for i in line_li_new]
+
+        in_vec_li = [1 if num in numpy_in_li else 0 for num in range(1, vec_length + 1)]
 
     model = joblib.load("./data/model/train_model.model")
-    predicted = model.predict(predict_li)
+    predicted = model.predict([in_vec_li])
 
     return predicted
 
@@ -129,5 +96,5 @@ if __name__ == '__main__':
 
     fit_train_data(train, features)
 
-    ret = profession_predict('人事经理')
+    ret = profession_predict('需求')
     print(ret)
